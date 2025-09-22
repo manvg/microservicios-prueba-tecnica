@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "sistema": "Control de Asistencia Partner",
+    "version": "1.2.3",
+    "fechaGeneracion": "2025-09-21T08:30:00-03:00",
+    "totalEmpleados": 8
+  },
+  "empresas": [
+    {
+      "rutEmpresa": "96.521.480-8",
+      "razonSocial": "Comercial Los Andes SpA",
+      "frecuenciaNomina": "quincenal",
+      "empleados": [
+        {
+          "rut": "12.345.678-9",
+          "nombres": "Juan Carlos",
+          "apellidos": "González Pérez",
+          "email": "juan.gonzalez@losandes.cl",
+          "cargo": "Desarrollador Senior",
+          "departamento": "TI",
+          "fechaIngreso": "2023-03-15",
+          "salarioBase": 1850000,
+          "horarioTrabajo": {
+            "horaEntrada": "09:00",
+            "horaSalida": "18:00",
+            "horasSemanales": 45
+          },
+          "activo": true
+        },
+        {
+          "rut": "98.765.432-1",
+          "nombres": "María Fernanda",
+          "apellidos": "Rodríguez Silva",
+          "email": "maria.rodriguez@losandes.cl",
+          "cargo": "Analista Contable",
+          "departamento": "Finanzas",
+          "fechaIngreso": "2022-08-10",
+          "salarioBase": 1350000,
+          "horarioTrabajo": {
+            "horaEntrada": "08:30",
+            "horaSalida": "17:30",
+            "horasSemanales": 45
+          },
+          "activo": true
+        },
+        {
+          "rut": "15.678.923-4",
+          "nombres": "Carlos Andrés",
+          "apellidos": "Muñoz Hernández",
+          "email": "carlos.munoz@losandes.cl",
+          "cargo": "Jefe de Ventas",
+          "departamento": "Comercial",
+          "fechaIngreso": "2021-01-20",
+          "salarioBase": 2100000,
+          "horarioTrabajo": {
+            "horaEntrada": "08:00",
+            "horaSalida": "17:00",
+            "horasSemanales": 45
+          },
+          "activo": true
+        }
+      ]
+    },
+    {
+      "rutEmpresa": "77.123.456-7",
+      "razonSocial": "Industrias del Sur Ltda",
+      "frecuenciaNomina": "mensual",
+      "empleados": [
+        {
+          "rut": "20.456.789-2",
+          "nombres": "Ana Patricia",
+          "apellidos": "López Morales",
+          "email": "ana.lopez@industriasur.cl",
+          "cargo": "Operadora de Maquinaria",
+          "departamento": "Producción",
+          "fechaIngreso": "2023-06-01",
+          "salarioBase": 950000,
+          "horarioTrabajo": {
+            "horaEntrada": "07:00",
+            "horaSalida": "16:00",
+            "horasSemanales": 45
+          },
+          "activo": true
+        },
+        {
+          "rut": "18.234.567-8",
+          "nombres": "Pedro Luis",
+          "apellidos": "Vargas Soto",
+          "email": "pedro.vargas@industriasur.cl",
+          "cargo": "Supervisor de Calidad",
+          "departamento": "Calidad",
+          "fechaIngreso": "2020-11-15",
+          "salarioBase": 1650000,
+          "horarioTrabajo": {
+            "horaEntrada": "06:30",
+            "horaSalida": "15:30",
+            "horasSemanales": 45
+          },
+          "activo": true
+        }
+      ]
+    },
+    {
+      "rutEmpresa": "85.987.321-5",
+      "razonSocial": "Servicios Profesionales Norte SA",
+      "frecuenciaNomina": "semanal",
+      "empleados": [
+        {
+          "rut": "14.789.456-3",
+          "nombres": "Claudia Beatriz",
+          "apellidos": "Espinoza Ramírez",
+          "email": "claudia.espinoza@profesionalesnorte.cl",
+          "cargo": "Consultora Senior",
+          "departamento": "Consultoría",
+          "fechaIngreso": "2024-01-08",
+          "salarioBase": 2250000,
+          "horarioTrabajo": {
+            "horaEntrada": "09:30",
+            "horaSalida": "18:30",
+            "horasSemanales": 45
+          },
+          "activo": true
+        },
+        {
+          "rut": "22.567.834-9",
+          "nombres": "Rodrigo Alejandro",
+          "apellidos": "Castillo Mendoza",
+          "email": "rodrigo.castillo@profesionalesnorte.cl",
+          "cargo": "Coordinador de Proyectos",
+          "departamento": "PMO",
+          "fechaIngreso": "2023-09-12",
+          "salarioBase": 1750000,
+          "horarioTrabajo": {
+            "horaEntrada": "08:45",
+            "horaSalida": "17:45",
+            "horasSemanales": 45
+          },
+          "activo": true
+        }
+      ]
+    }
+  ]
+}
