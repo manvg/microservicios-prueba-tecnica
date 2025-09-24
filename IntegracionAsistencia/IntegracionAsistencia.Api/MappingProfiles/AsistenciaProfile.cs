@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using IntegracionAsistencia.Api.Dtos;
+using IntegracionAsistencia.Application.Dtos;
 using IntegracionAsistencia.Domain.Entities;
 
 namespace IntegracionAsistencia.Api.MappingProfiles

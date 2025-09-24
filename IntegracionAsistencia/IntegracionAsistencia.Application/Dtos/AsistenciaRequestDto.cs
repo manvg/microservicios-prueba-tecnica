@@ -1,4 +1,4 @@
-﻿namespace IntegracionAsistencia.Api.Dtos
+﻿namespace IntegracionAsistencia.Application.Dtos
 {
     public class AsistenciaRequestDto
     {

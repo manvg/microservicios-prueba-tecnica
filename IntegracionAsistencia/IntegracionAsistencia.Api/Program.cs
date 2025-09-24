@@ -3,7 +3,6 @@ using IntegracionAsistencia.Application.Services;
 using IntegracionAsistencia.Infrastructure.Persistence.Contexts;
 using IntegracionAsistencia.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Inyección de dependencias (repositorios y servicios)
 builder.Services.AddScoped<IAsistenciaRepository, AsistenciaRepository>();
 builder.Services.AddScoped<IAsistenciaService, AsistenciaService>();
+builder.Services.AddScoped<IAsistenciaCargaRepository, AsistenciaCargaRepository>();
+builder.Services.AddScoped<IAsistenciaCargaService, AsistenciaCargaService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

@@ -1,15 +1,7 @@
-﻿using IntegracionAsistencia.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IntegracionAsistencia.Domain.Entities
+﻿namespace IntegracionAsistencia.Application.Dtos
 {
-    public class Asistencia
+    public class CargaAsistenciaRequestDto
     {
-        public int IdAsistencia { get; set; }
         public int IdEmpleado { get; set; }
         public DateTime Fecha { get; set; }
         public decimal HorasTrabajadas { get; set; }
@@ -17,16 +9,10 @@ namespace IntegracionAsistencia.Domain.Entities
         public int IdTipoJornada { get; set; }
         public int IdEstadoAsistencia { get; set; }
         public int IdTipoOrigenDato { get; set; }
+        public string? Observaciones { get; set; }
         public DateTime? HoraEntrada { get; set; }
         public DateTime? HoraSalida { get; set; }
-        public string? Observaciones { get; set; }
         public string? Ubicacion { get; set; }
         public string? DispositivoMarcaje { get; set; }
-
-
-        public Empleado Empleado { get; set; }
-        public TipoJornada TipoJornada { get; set; }
-        public EstadoAsistencia EstadoAsistencia { get; set; }
-        public TipoOrigenDato TipoOrigenDato { get; set; }
     }
 }
