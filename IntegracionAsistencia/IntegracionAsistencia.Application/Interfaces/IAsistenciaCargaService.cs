@@ -4,6 +4,7 @@ namespace IntegracionAsistencia.Application.Interfaces
 {
     public interface IAsistenciaCargaService
     {
-        Task<CargaResultadoDto> CargarAsistenciasAsync(IEnumerable<CargaAsistenciaRequestDto> asistencias);
+        Task<CargaResultadoDto> CargarAsistenciasJsonAsync(IEnumerable<CargaAsistenciaRequestDto> asistencias);
+        Task<CargaResultadoDto> CargarAsistenciasExcelAsync(Stream archivo, string nombreArchivo);
     }
 }

@@ -20,7 +20,7 @@ namespace IntegracionAsistencia.Api.Controllers
             _asistenciaCargaService = asistenciaCargaService;
         }
 
-        #region [POST]
+        #region [Registro individual]
         /// <summary>
         /// Registrar asistencia individual
         /// </summary>
@@ -36,22 +36,6 @@ namespace IntegracionAsistencia.Api.Controllers
             var response = _mapper.Map<AsistenciaResponseDto>(asistencia);
             return Ok(response);
         }
-
-        /// <summary>
-        /// Registrar asistencias de forma masiva
-        /// </summary>
-        [HttpPost("carga-masiva")]
-        public async Task<ActionResult<CargaResultadoDto>> CargarAsistencias([FromBody] IEnumerable<CargaAsistenciaRequestDto> asistencias)
-        {
-            if (asistencias == null || !asistencias.Any())
-                return BadRequest("Debe enviar al menos un registro de asistencia.");
-
-            var resultado = await _asistenciaCargaService.CargarAsistenciasAsync(asistencias);
-
-            return Ok(resultado);
-        }
-
-        #endregion
 
         /// <summary>
         /// Obtener asistencias por empleado en un rango de fechas
@@ -77,5 +61,45 @@ namespace IntegracionAsistencia.Api.Controllers
             var total = await _asistenciaService.CalcularTotalHorasAsync(idEmpleado, desde, hasta);
             return Ok(total);
         }
+        #endregion
+
+        #region [Registro masivo]
+        /// <summary>
+        /// Registrar asistencias de forma masiva en formato JSON
+        /// </summary>
+        [HttpPost("carga-masiva-json")]
+        public async Task<ActionResult<CargaResultadoDto>> CargarAsistencias([FromBody] IEnumerable<CargaAsistenciaRequestDto> asistencias)
+        {
+            if (asistencias == null || !asistencias.Any())
+                return BadRequest("Debe enviar al menos un registro de asistencia.");
+
+            var resultado = await _asistenciaCargaService.CargarAsistenciasJsonAsync(asistencias);
+
+            return Ok(resultado);
+        }
+
+        /// <summary>
+        /// Registrar asistencias de forma masiva en formato Excel
+        /// </summary>
+        [HttpPost("carga-masiva-excel")]
+        public async Task<ActionResult<CargaResultadoDto>> CargaMasivaExcel(IFormFile archivo)
+        {
+            if (archivo == null || archivo.Length == 0)
+                return BadRequest(new CargaResultadoDto { Mensaje = "Archivo no válido." });
+
+            var extension = Path.GetExtension(archivo.FileName).ToLower();
+            if (extension != ".xlsx" && extension != ".xls")
+                return BadRequest(new CargaResultadoDto { Mensaje = "Solo se permiten archivos Excel con extensión .xlsx o .xls" });
+
+            await using var stream = archivo.OpenReadStream();
+            var resultado = await _asistenciaCargaService.CargarAsistenciasExcelAsync(stream, archivo.FileName);
+
+            if (resultado.Errores.Any())
+                return BadRequest(resultado);
+
+            return Ok(resultado);
+         
+        }
+        #endregion
     }
 }

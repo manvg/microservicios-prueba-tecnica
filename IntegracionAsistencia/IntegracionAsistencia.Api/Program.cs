@@ -3,8 +3,12 @@ using IntegracionAsistencia.Application.Services;
 using IntegracionAsistencia.Infrastructure.Persistence.Contexts;
 using IntegracionAsistencia.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+//using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
+
+ExcelPackage.License.SetNonCommercialPersonal("Manuel - Prueba Técnica");
 
 // DbContext con SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
