@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IntegracionAsistencia.Application\IntegracionAsistencia.Application.csproj" />
     <ProjectReference Include="..\IntegracionAsistencia.Domain\IntegracionAsistencia.Domain.csproj" />
   </ItemGroup>
 

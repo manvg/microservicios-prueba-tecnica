@@ -1,8 +1,6 @@
 ﻿using IntegracionAsistencia.Application.Interfaces;
 using IntegracionAsistencia.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using IntegracionAsistencia.Domain.Interfaces;
 
 namespace IntegracionAsistencia.Application.Services
 {

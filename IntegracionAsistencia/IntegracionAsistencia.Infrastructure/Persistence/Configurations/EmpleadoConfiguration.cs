@@ -59,8 +59,8 @@ namespace IntegracionAsistencia.Infrastructure.Persistence.Configurations
             builder.HasOne(e => e.Empresa)
                 .WithMany(emp => emp.Empleados)
                 .HasForeignKey(e => e.IdEmpresa)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Empleado_Empresa");
+                .HasConstraintName("FK_Empleado_Empresa")
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

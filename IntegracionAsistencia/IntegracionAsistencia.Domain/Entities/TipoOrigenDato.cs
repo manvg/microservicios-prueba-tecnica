@@ -10,6 +10,6 @@ namespace IntegracionAsistencia.Domain.Entities
     {
         public int IdTipoOrigenDato { get; private set; }
         public string Nombre { get; private set; }
-        public ICollection<Asistencia> Asistencias { get; private set; } = new List<Asistencia>();
+        public virtual ICollection<Asistencia> Asistencias { get; set; } = new List<Asistencia>();
     }
 }

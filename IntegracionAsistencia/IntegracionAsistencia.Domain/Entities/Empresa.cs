@@ -9,20 +9,13 @@ namespace IntegracionAsistencia.Domain.Entities
 {
     public class Empresa
     {
-        public int IdEmpresa { get; private set; }
-        public string RutEmpresa { get; private set; }
-        public string RazonSocial { get; private set; }
-        public int IdTipoNomina { get; private set; }
-        public TipoNomina TipoNomina { get; private set; }
-        public ICollection<Empleado> Empleados { get; private set; } = new List<Empleado>();
+        public int IdEmpresa { get; set; }
+        public string RutEmpresa { get; set; }
+        public string RazonSocial { get; set; }
+        public int IdTipoNomina { get; set; }
 
-        private Empresa() { }
-
-        public Empresa(string rutEmpresa, string razonSocial, int idTipoNomina)
-        {
-            RutEmpresa = rutEmpresa;
-            RazonSocial = razonSocial;
-            IdTipoNomina = idTipoNomina;
-        }
+        public virtual TipoNomina TipoNomina { get; set; }
+        public virtual ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
+        public virtual ICollection<ResumenAsistencia> ResumenesAsistencia { get; set; } = new List<ResumenAsistencia>();
     }
 }

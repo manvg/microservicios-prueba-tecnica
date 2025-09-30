@@ -21,25 +21,31 @@ namespace IntegracionAsistencia.Infrastructure.Persistence.Configurations
             builder.Property(a => a.HorasExtras)
                    .HasColumnType("decimal(5,2)");
 
-            builder.HasOne(a => a.Empleado)
-                            .WithMany(e => e.Asistencias)
-                            .HasForeignKey(a => a.IdEmpleado)
-                            .HasConstraintName("FK_Asistencia_Empleado");
+            builder.HasOne(e => e.Empleado)
+                            .WithMany(emp => emp.Asistencias)
+                            .HasForeignKey(e => e.IdEmpleado)
+                            .HasConstraintName("FK_Asistencia_Empleado")
+                            .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.TipoJornada)
-                   .WithMany(t => t.Asistencias)
-                   .HasForeignKey(a => a.IdTipoJornada)
-                   .HasConstraintName("FK_Asistencia_TipoJornada");
+            builder.HasOne(e => e.TipoJornada)
+                .WithMany(tj => tj.Asistencias)
+                .HasForeignKey(e => e.IdTipoJornada)
+                .HasConstraintName("FK_Asistencia_TipoJornada")
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.EstadoAsistencia)
-                   .WithMany(ea => ea.Asistencias)
-                   .HasForeignKey(a => a.IdEstadoAsistencia)
-                   .HasConstraintName("FK_Asistencia_EstadoAsistencia");
+            builder.HasOne(e => e.EstadoAsistencia)
+                .WithMany(ea => ea.Asistencias)
+                .HasForeignKey(e => e.IdEstadoAsistencia)
+                .HasConstraintName("FK_Asistencia_EstadoAsistencia")
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.TipoOrigenDato)
-                   .WithMany(to => to.Asistencias)
-                   .HasForeignKey(a => a.IdTipoOrigenDato)
-                   .HasConstraintName("FK_Asistencia_TipoOrigenDato");
+            builder.HasOne(e => e.TipoOrigenDato)
+                .WithMany(tod => tod.Asistencias)
+                .HasForeignKey(e => e.IdTipoOrigenDato)
+                .HasConstraintName("FK_Asistencia_TipoOrigenDato")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(e => new { e.IdEmpleado, e.Fecha });
         }
     }
 }

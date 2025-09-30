@@ -1,10 +1,10 @@
 using IntegracionAsistencia.Application.Interfaces;
 using IntegracionAsistencia.Application.Services;
+using IntegracionAsistencia.Domain.Interfaces;
 using IntegracionAsistencia.Infrastructure.Persistence.Contexts;
 using IntegracionAsistencia.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-//using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +17,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Inyección de dependencias (repositorios y servicios)
 builder.Services.AddScoped<IAsistenciaRepository, AsistenciaRepository>();
 builder.Services.AddScoped<IAsistenciaService, AsistenciaService>();
-builder.Services.AddScoped<IAsistenciaCargaRepository, AsistenciaCargaRepository>();
 builder.Services.AddScoped<IAsistenciaCargaService, AsistenciaCargaService>();
+builder.Services.AddScoped<IResumenAsistenciaRepository, ResumenAsistenciaRepository>();
+builder.Services.AddScoped<IResumenAsistenciaService, ResumenAsistenciaService>();
+
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

@@ -27,10 +27,10 @@ namespace IntegracionAsistencia.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.HasOne(e => e.TipoNomina)
-                .WithMany(t => t.Empresas)
+                .WithMany(tn => tn.Empresas)
                 .HasForeignKey(e => e.IdTipoNomina)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Empresa_TipoNomina");
+                .HasConstraintName("FK_Empresa_TipoNomina")
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

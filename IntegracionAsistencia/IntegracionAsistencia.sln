@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36429.23 d17.14
+VisualStudioVersion = 17.14.36429.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegracionAsistencia.Api", "IntegracionAsistencia.Api\IntegracionAsistencia.Api.csproj", "{694E2AEB-EB9C-43C7-A2EE-B8046CA4DB7A}"
 EndProject

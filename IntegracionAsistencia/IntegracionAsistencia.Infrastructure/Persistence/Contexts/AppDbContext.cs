@@ -28,6 +28,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<TipoOrigenDato> TipoOrigenDato { get; set; }
 
+    public virtual DbSet<ResumenAsistencia> ResumenAsistencia { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         //Aplicar configuracioens desde Infrastructure.Persistence.Configurations

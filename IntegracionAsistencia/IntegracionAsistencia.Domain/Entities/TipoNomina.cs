@@ -10,9 +10,7 @@ namespace IntegracionAsistencia.Domain.Entities
     {
         public int IdTipoNomina { get; private set; }
         public string Nombre { get; private set; }
-        public ICollection<Empresa> Empresas { get; private set; } = new List<Empresa>();
-
-        private TipoNomina() { }
-        public TipoNomina(string nombre) => Nombre = nombre;
+        public virtual ICollection<Empresa> Empresas { get; set; } = new List<Empresa>();
+        public virtual ICollection<ResumenAsistencia> ResumenesAsistencia { get; set; } = new List<ResumenAsistencia>();
     }
 }

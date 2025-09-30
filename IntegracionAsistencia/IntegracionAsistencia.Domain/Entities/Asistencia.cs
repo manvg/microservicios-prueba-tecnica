@@ -17,16 +17,14 @@ namespace IntegracionAsistencia.Domain.Entities
         public int IdTipoJornada { get; set; }
         public int IdEstadoAsistencia { get; set; }
         public int IdTipoOrigenDato { get; set; }
-        public DateTime? HoraEntrada { get; set; }
-        public DateTime? HoraSalida { get; set; }
+        public TimeSpan? HoraEntrada { get; set; }
+        public TimeSpan? HoraSalida { get; set; }
         public string? Observaciones { get; set; }
         public string? Ubicacion { get; set; }
         public string? DispositivoMarcaje { get; set; }
-
-
-        public Empleado Empleado { get; set; }
-        public TipoJornada TipoJornada { get; set; }
-        public EstadoAsistencia EstadoAsistencia { get; set; }
-        public TipoOrigenDato TipoOrigenDato { get; set; }
+        public virtual Empleado Empleado { get; set; }
+        public virtual TipoJornada TipoJornada { get; set; }
+        public virtual EstadoAsistencia EstadoAsistencia { get; set; }
+        public virtual TipoOrigenDato TipoOrigenDato { get; set; }
     }
 }

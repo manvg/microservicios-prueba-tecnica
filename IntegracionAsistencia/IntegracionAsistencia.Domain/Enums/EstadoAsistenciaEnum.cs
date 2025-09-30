@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace IntegracionAsistencia.Domain.Enums
 {
-    public enum TipoJornada
+    public enum EstadoAsistenciaEnum
     {
-        Normal = 1,
-        ConHorasExtras = 2,
-        LicenciaMedica = 3,
-        AusenciaInjustificada = 4,
-        Recuperacion = 5
+        Pendiente = 1,
+        Procesado = 2,
+        Error = 3,
+        Rechazado = 4
     }
 }

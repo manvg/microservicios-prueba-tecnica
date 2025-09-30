@@ -8,11 +8,8 @@ namespace IntegracionAsistencia.Domain.Entities
 {
     public class EstadoAsistencia
     {
-        public int IdEstadoAsistencia { get; private set; }
-        public string Nombre { get; private set; }
-        public ICollection<Asistencia> Asistencias { get; private set; } = new List<Asistencia>();
-
-        private EstadoAsistencia() { }
-        public EstadoAsistencia(string nombre) => Nombre = nombre;
+        public int IdEstadoAsistencia { get; set; }
+        public string Nombre { get; set; }
+        public virtual ICollection<Asistencia> Asistencias { get; set; } = new List<Asistencia>();
     }
 }

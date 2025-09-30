@@ -8,38 +8,23 @@ namespace IntegracionAsistencia.Domain.Entities
 {
     public class Empleado
     {
-        public int IdEmpleado { get; private set; }
-        public int IdEmpresa { get; private set; }
-        public string Rut { get; private set; }
-        public string Nombres { get; private set; }
-        public string Apellidos { get; private set; }
-        public string? Email { get; private set; }
-        public string? Cargo { get; private set; }
-        public string? Departamento { get; private set; }
-        public DateTime FechaIngreso { get; private set; }
-        public decimal SalarioBase { get; private set; }
-        public TimeSpan HoraEntrada { get; private set; }
-        public TimeSpan HoraSalida { get; private set; }
-        public int HorasSemanales { get; private set; }
-        public bool Activo { get; private set; }
-        public Empresa Empresa { get; private set; }
-        public ICollection<Asistencia> Asistencias { get; private set; } = new List<Asistencia>();
+        public int IdEmpleado { get; set; }
+        public int IdEmpresa { get; set; }
+        public string Rut { get; set; }
+        public string Nombres { get; set; }
+        public string Apellidos { get; set; }
+        public string? Email { get; set; }
+        public string? Cargo { get; set; }
+        public string? Departamento { get; set; }
+        public DateTime FechaIngreso { get; set; }
+        public decimal SalarioBase { get; set; }
+        public TimeSpan HoraEntrada { get; set; }
+        public TimeSpan HoraSalida { get; set; }
+        public int HorasSemanales { get; set; }
+        public bool Activo { get; set; }
 
-        private Empleado() { }
-
-        public Empleado(int idEmpresa, string rut, string nombres, string apellidos,
-            DateTime fechaIngreso, decimal salarioBase, TimeSpan horaEntrada, TimeSpan horaSalida, int horasSemanales, bool activo)
-        {
-            IdEmpresa = idEmpresa;
-            Rut = rut;
-            Nombres = nombres;
-            Apellidos = apellidos;
-            FechaIngreso = fechaIngreso;
-            SalarioBase = salarioBase;
-            HoraEntrada = horaEntrada;
-            HoraSalida = horaSalida;
-            HorasSemanales = horasSemanales;
-            Activo = activo;
-        }
+        public virtual Empresa Empresa { get; set; }
+        public virtual ICollection<Asistencia> Asistencias { get; set; } = new List<Asistencia>();
+        public virtual ICollection<ResumenAsistencia> ResumenesAsistencia { get; set; } = new List<ResumenAsistencia>();
     }
 }

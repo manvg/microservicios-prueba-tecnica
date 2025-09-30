@@ -1,6 +1,8 @@
 ﻿using IntegracionAsistencia.Application.Dtos;
 using IntegracionAsistencia.Application.Interfaces;
+using IntegracionAsistencia.Domain.Entities;
 using IntegracionAsistencia.Domain.Enums;
+using IntegracionAsistencia.Domain.Interfaces;
 using OfficeOpenXml;
 using System;
 using System.Globalization;
@@ -12,24 +14,91 @@ namespace IntegracionAsistencia.Application.Services
     /// </summary>
     public class AsistenciaCargaService : IAsistenciaCargaService
     {
-        private readonly IAsistenciaCargaRepository _asistenciaCargaRepository;
-
-        /// <summary>
-        /// Constructor del servicio de carga de asistencias.
-        /// </summary>
-        public AsistenciaCargaService(IAsistenciaCargaRepository asistenciaCargaRepository)
+        private readonly IAsistenciaRepository _asistenciaRepository;
+        public AsistenciaCargaService(IAsistenciaRepository asistenciaRepository)
         {
-            _asistenciaCargaRepository = asistenciaCargaRepository;
+            _asistenciaRepository = asistenciaRepository;
         }
 
+        #region [Carga masiva - JSON]
         /// <summary>
         /// Ejecuta la carga masiva de asistencias. Origen de tipo JSON.
         /// </summary>
         public async Task<CargaResultadoDto> CargarAsistenciasJsonAsync(IEnumerable<CargaAsistenciaRequestDto> asistencias)
         {
-            return await _asistenciaCargaRepository.CargarAsistenciasAsync(asistencias);
+            return await ProcesarCargaMasivaAsync(asistencias);
         }
 
+        private async Task<CargaResultadoDto> ProcesarCargaMasivaAsync(IEnumerable<CargaAsistenciaRequestDto> asistencias)
+        {
+            #region [Parámetros]
+            int totalRecibidos = asistencias.Count();
+            int totalInsertados = 0;
+            int totalDuplicados = 0;
+            var listaAsistenciaEntity = new List<Asistencia>();
+            #endregion
+
+            // Agrupar por fecha para optimizar consultas
+            var asistenciasPorFecha = asistencias
+                .GroupBy(a => a.Fecha.Date)
+                .OrderBy(g => g.Key);
+
+            foreach (var item in asistenciasPorFecha)
+            {
+                // Obtener existentes en BD usando el repositorio (no DbContext directamente)
+                var fechas = new List<DateTime> { item.Key };
+                var existentes = await _asistenciaRepository.ObtenerExistentesPorFechasAsync(fechas);
+
+                var existentesSet = new HashSet<(int, DateTime)>(existentes);
+
+                foreach (var dto in item)
+                {
+                    // Descartar asistencia existente (LÓGICA DE NEGOCIO)
+                    if (existentesSet.Contains((dto.IdEmpleado, dto.Fecha.Date)))
+                    {
+                        totalDuplicados++;
+                        continue;
+                    }
+
+                    // Mapear DTO a Entidad
+                    listaAsistenciaEntity.Add(new Asistencia
+                    {
+                        IdEmpleado = dto.IdEmpleado,
+                        Fecha = dto.Fecha,
+                        HoraEntrada = dto.HoraEntrada,
+                        HoraSalida = dto.HoraSalida,
+                        HorasTrabajadas = dto.HorasTrabajadas,
+                        HorasExtras = dto.HorasExtras,
+                        IdTipoJornada = dto.IdTipoJornada,
+                        IdEstadoAsistencia = dto.IdEstadoAsistencia,
+                        IdTipoOrigenDato = dto.IdTipoOrigenDato,
+                        Observaciones = dto.Observaciones,
+                        Ubicacion = dto.Ubicacion,
+                        DispositivoMarcaje = dto.DispositivoMarcaje
+                    });
+
+                    totalInsertados++;
+                }
+            }
+
+            // Guardar usando el repositorio
+            if (listaAsistenciaEntity.Any())
+            {
+                await _asistenciaRepository.AgregarRangoAsync(listaAsistenciaEntity);
+            }
+
+            return new CargaResultadoDto
+            {
+                TotalRecibidos = totalRecibidos,
+                TotalInsertados = totalInsertados,
+                TotalDuplicados = totalDuplicados,
+                Mensaje = "Carga masiva procesada correctamente."
+            };
+        }
+
+        #endregion
+
+        #region [Carga masiva - Excel]
         /// <summary>
         /// Ejecuta la carga masiva de asistencias. Origen de tipo Excel.
         /// </summary>
@@ -56,14 +125,7 @@ namespace IntegracionAsistencia.Application.Services
                 return resultado;
             }
 
-            var respuestaRepository = await _asistenciaCargaRepository.CargarAsistenciasAsync(resultadoValidacion.ListaAsistencias);
-
-            resultado.TotalInsertados = respuestaRepository.TotalInsertados;
-            resultado.TotalDuplicados = respuestaRepository.TotalDuplicados;
-            resultado.Errores.AddRange(respuestaRepository.Errores);
-            resultado.Mensaje = respuestaRepository.Mensaje;
-
-            return resultado;
+            return await ProcesarCargaMasivaAsync(resultadoValidacion.ListaAsistencias);
         }
 
         /// <summary>
@@ -73,8 +135,8 @@ namespace IntegracionAsistencia.Application.Services
         {
             var resultado = new CargaAsistenciaValidacionExcelDto();
             var cultura = new CultureInfo("es-CL");
-            var tipoJornadaEnum = Enum.GetValues(typeof(TipoJornada)).Cast<TipoJornada>().ToList();
-            var estadoAsistenciaEnum = Enum.GetValues(typeof(EstadoAsistencia)).Cast<EstadoAsistencia>().ToList();
+            var tipoJornadaEnum = Enum.GetValues(typeof(TipoJornadaEnum)).Cast<TipoJornadaEnum>().ToList();
+            var estadoAsistenciaEnum = Enum.GetValues(typeof(EstadoAsistenciaEnum)).Cast<EstadoAsistenciaEnum>().ToList();
 
             for (int fila = 2; fila <= hojaExcel.Dimension.End.Row; fila++)
             {
@@ -106,7 +168,7 @@ namespace IntegracionAsistencia.Application.Services
                     string.IsNullOrWhiteSpace(dispositivo))
                 {
                     continue;
-                } 
+                }
                 #endregion
 
                 bool filaValida = true;
@@ -155,11 +217,11 @@ namespace IntegracionAsistencia.Application.Services
                     idEstadoAsistencia = (int)estadoAsistenciaEnum.Where(a => a.ToString().ToLower() == estadoRaw!.ToLower()).First();
                 }
                 // Columna 9
-                DateTime? horaEntrada = DateTime.TryParse(horaEntradaRaw, cultura, DateTimeStyles.None, out var hEntrada) ? hEntrada : null;
-                
-                // Columna 10
-                DateTime? horaSalida = DateTime.TryParse(horaSalidaRaw, cultura, DateTimeStyles.None, out var hSalida) ? hSalida : null;
+                TimeSpan? horaEntrada = TimeSpan.TryParse(horaEntradaRaw, out var hEntrada) ? hEntrada : null;
 
+                // Columna 10
+                TimeSpan? horaSalida = TimeSpan.TryParse(horaSalidaRaw, out var hSalida) ? hSalida : null;
+                
                 if (horaEntrada != null && horaSalida != null && horaSalida < horaEntrada)
                 {
                     resultado.Errores.Add($"Fila {fila}: HoraSalida no puede ser menor que HoraEntrada.");
@@ -177,7 +239,7 @@ namespace IntegracionAsistencia.Application.Services
                         HorasExtras = horasExtras,
                         IdTipoJornada = idTipoJornada,
                         IdEstadoAsistencia = idEstadoAsistencia,
-                        IdTipoOrigenDato = (int)TipoOrigenDato.Excel,
+                        IdTipoOrigenDato = (int)TipoOrigenDatoEnum.Excel,
                         Observaciones = observaciones,
                         HoraEntrada = horaEntrada,
                         HoraSalida = horaSalida,
@@ -188,6 +250,7 @@ namespace IntegracionAsistencia.Application.Services
             }
 
             return resultado;
-        }
+        } 
+        #endregion
     }
 }

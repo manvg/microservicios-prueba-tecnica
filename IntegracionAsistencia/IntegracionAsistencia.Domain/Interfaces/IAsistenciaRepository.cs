@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IntegracionAsistencia.Application.Interfaces
+namespace IntegracionAsistencia.Domain.Interfaces
 {
     public interface IAsistenciaRepository
     {
@@ -24,5 +24,17 @@ namespace IntegracionAsistencia.Application.Interfaces
         /// Calcula el total de horas trabajadas + extras de un empleado en un rango de fechas
         /// </summary>
         Task<decimal> CalcularTotalHorasAsync(int idEmpleado, DateTime desde, DateTime hasta);
+
+        Task<IReadOnlyCollection<Asistencia>> ObtenerPorPeriodoAsync(int idEmpresa, int? idEmpleado, DateTime fechDesde, DateTime fechaHasta);
+
+        /// <summary>
+        /// Obtiene los pares (IdEmpleado, Fecha) de asistencias existentes para las fechas especificadas.
+        /// </summary>
+        Task<List<(int IdEmpleado, DateTime Fecha)>> ObtenerExistentesPorFechasAsync(List<DateTime> fechas);
+
+        /// <summary>
+        /// Agrega un rango de asistencias a la base de datos de forma masiva.
+        /// </summary>
+        Task AgregarRangoAsync(List<Asistencia> asistencias);
     }
 }

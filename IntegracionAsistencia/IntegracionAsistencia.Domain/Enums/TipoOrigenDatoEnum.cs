@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IntegracionAsistencia.Domain.Enums
 {
-    public enum TipoOrigenDato
+    public enum TipoOrigenDatoEnum
     {
         Api = 1,
         Excel = 2

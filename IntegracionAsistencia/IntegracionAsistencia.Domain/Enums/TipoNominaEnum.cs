@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace IntegracionAsistencia.Domain.Enums
 {
-    public enum EstadoAsistencia
+    public enum TipoNominaEnum
     {
-        Pendiente = 1,
-        Procesado = 2,
-        Error = 3,
-        Rechazado = 4
+        Semanal = 1,
+        Quincenal = 2,
+        Mensual = 3
     }
 }

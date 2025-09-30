@@ -10,8 +10,8 @@
         public int IdEstadoAsistencia { get; set; }
         public int IdTipoOrigenDato { get; set; }
         public string? Observaciones { get; set; }
-        public DateTime? HoraEntrada { get; set; }
-        public DateTime? HoraSalida { get; set; }
+        public TimeSpan? HoraEntrada { get; set; }
+        public TimeSpan? HoraSalida { get; set; }
         public string? Ubicacion { get; set; }
         public string? DispositivoMarcaje { get; set; }
     }

@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace IntegracionAsistencia.Domain.Enums
 {
-    public enum TipoNomina
+    public enum TipoJornadaEnum
     {
-        Semanal = 1,
-        Quincenal = 2,
-        Mensual = 3
+        Normal = 1,
+        ConHorasExtras = 2,
+        LicenciaMedica = 3,
+        AusenciaInjustificada = 4,
+        Recuperacion = 5
     }
 }
