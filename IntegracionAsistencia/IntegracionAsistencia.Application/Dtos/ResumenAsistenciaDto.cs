@@ -18,7 +18,7 @@ namespace IntegracionAsistencia.Application.Dtos
         public decimal HorasExtras { get; set; }
         public int Inasistencias { get; set; }
         public int Licencias { get; set; }
-        public string? IdCorrelacion { get; set; }
+        public Guid? IdCorrelacion { get; set; }
         public DateTime FechaGeneracion { get; set; }
     }
 }

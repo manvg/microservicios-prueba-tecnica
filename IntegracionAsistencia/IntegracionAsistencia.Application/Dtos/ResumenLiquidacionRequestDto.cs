@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace IntegracionAsistencia.Application.Dtos
 {
-    public class ResumenAsistenciaRequestDto
+    public class ResumenLiquidacionRequestDto
     {
         public int IdEmpresa { get; set; }
         public int? IdEmpleado { get; set; }
-        public int IdTipoNomina { get; set; }
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
-        public Guid? IdCorrelacion { get; set; }
+        public int IdTipoNomina { get; set; }
     }
 }

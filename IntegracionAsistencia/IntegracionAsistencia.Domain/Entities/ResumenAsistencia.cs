@@ -14,7 +14,9 @@ namespace IntegracionAsistencia.Domain.Entities
         public decimal HorasExtras { get; set; }
         public int Inasistencias { get; set; }
         public int Licencias { get; set; }
-        public string? IdCorrelacion { get; set; }
+        public int DiasLaborables { get; set; }
+        public int DiasAsistidos { get; set; }
+        public Guid? IdCorrelacion { get; set; }
         public DateTime FechaGeneracion { get; set; }
         public virtual Empresa Empresa { get; set; }
         public virtual Empleado Empleado { get; set; }

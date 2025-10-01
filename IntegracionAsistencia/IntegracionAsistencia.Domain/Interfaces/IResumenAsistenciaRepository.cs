@@ -6,5 +6,6 @@ namespace IntegracionAsistencia.Domain.Interfaces
     {
         Task<ResumenAsistencia> GuardarResumenAsistenciaAsync(ResumenAsistencia resumen);
         Task<bool> GuardarResumenesAsistenciaMasivoAsync(IEnumerable<ResumenAsistencia> listaResumenes);
+        Task<List<ResumenAsistencia>> ObtenerResumenesPorPeriodoAsync(int idEmpresa, int? idEmpleado, DateTime fechaDesde, DateTime fechaHasta, int idTipoNomina);
     }
 }

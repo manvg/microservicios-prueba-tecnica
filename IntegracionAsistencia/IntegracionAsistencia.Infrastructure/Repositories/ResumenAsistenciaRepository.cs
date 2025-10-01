@@ -94,7 +94,6 @@ namespace IntegracionAsistencia.Infrastructure.Repositories
                 {
                     var clave = $"{item.IdEmpresa}-{item.IdEmpleado}-{item.IdTipoNomina}-{item.FechaDesde:yyyyMMdd}-{item.FechaHasta:yyyyMMdd}";
 
-                    // Detectar duplicados dentro del mismo batch - omitir si ya existe
                     if (!clavesEnBatch.Add(clave))
                         continue;
 
@@ -104,6 +103,8 @@ namespace IntegracionAsistencia.Infrastructure.Repositories
                         existente.HorasExtras = item.HorasExtras;
                         existente.Inasistencias = item.Inasistencias;
                         existente.Licencias = item.Licencias;
+                        existente.DiasLaborables = item.DiasLaborables;
+                        existente.DiasAsistidos = item.DiasAsistidos;
                         existente.IdCorrelacion = item.IdCorrelacion;
                         existente.FechaGeneracion = fechaHoy;
                         listaActualizar.Add(existente);
@@ -143,9 +144,6 @@ namespace IntegracionAsistencia.Infrastructure.Repositories
                     ? $"SQL Error {sqlException.Number}: {sqlException.Message}"
                     : ex.InnerException?.Message ?? ex.Message;
 
-                // Si tienes logger, descomenta esta línea:
-                // _logger.LogError(ex, "Error al guardar resúmenes masivos: {Error}", errorDetalle);
-
                 throw new InvalidOperationException($"Error al guardar resúmenes de asistencia: {errorDetalle}", ex);
             }
             catch (Exception ex)
@@ -153,6 +151,22 @@ namespace IntegracionAsistencia.Infrastructure.Repositories
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        public async Task<List<ResumenAsistencia>> ObtenerResumenesPorPeriodoAsync(int idEmpresa, int? idEmpleado, DateTime fechaDesde, DateTime fechaHasta, int idTipoNomina)
+        {
+            var query = _context.ResumenAsistencia
+                .Include(r => r.Empleado)
+                .Where(r => r.IdEmpresa == idEmpresa
+                         && r.IdTipoNomina == idTipoNomina
+                         && r.FechaDesde == fechaDesde.Date
+                         && r.FechaHasta == fechaHasta.Date);
+
+            if (idEmpleado.HasValue)
+                query = query.Where(r => r.IdEmpleado == idEmpleado.Value);
+
+            var resumen = await query.OrderBy(r => r.IdEmpleado).ToListAsync();
+            return resumen;
         }
     }
 }

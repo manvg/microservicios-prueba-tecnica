@@ -29,20 +29,25 @@ namespace IntegracionAsistencia.Infrastructure.Persistence.Configurations
 
             builder.Property(e => e.HorasNormales)
                    .HasColumnType("decimal(10,2)")
-                   .HasDefaultValue(0);
+                   .IsRequired();
 
             builder.Property(e => e.HorasExtras)
                    .HasColumnType("decimal(10,2)")
-                   .HasDefaultValue(0);
+                   .IsRequired();
 
             builder.Property(e => e.Inasistencias)
-                   .HasDefaultValue(0);
+                   .IsRequired();
 
             builder.Property(e => e.Licencias)
-                   .HasDefaultValue(0);
+                   .IsRequired();
 
-            builder.Property(e => e.IdCorrelacion)
-                   .HasMaxLength(100);
+            builder.Property(e => e.DiasLaborables)
+                   .IsRequired();
+
+            builder.Property(e => e.DiasAsistidos)
+                   .IsRequired();
+
+            builder.Property(e => e.IdCorrelacion);
 
             builder.Property(e => e.FechaGeneracion)
                    .HasColumnType("datetime")
