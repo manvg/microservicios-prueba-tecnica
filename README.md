@@ -3,39 +3,78 @@
 ## Contexto
 La empresa cuenta con un sistema que calcula sueldos de trabajadores, el cual recibe la nómina y la información básica necesaria para generar las liquidaciones.  
 Actualmente buscan un proveedor para el control de asistencia que entregue dispositivos físicos de marcaje y permita integrar la información con el sistema de sueldos.  
-La solución esperada debe facilitar el intercambio de datos entre ambos sistemas de manera “segura, escalable, observable, trazable y resiliente”.
+La solución esperada debe facilitar el intercambio de datos entre ambos sistemas de manera **segura, escalable, observable, trazable y resiliente**.
 
-## Propuesta
-Se planteó una arquitectura basada en microservicios, separando responsabilidades de forma clara:
+---
 
-- Microservicio de Integración de Asistencias: encargado de registrar las asistencias, tanto de manera individual como masiva (JSON o Excel). Valida la existencia de empleados, evita duplicados y persiste los datos en base de datos. Además, expone consultas para obtener asistencias por empleado y calcular el total de horas normales y extras.
-- Microservicio de Cálculo de Liquidaciones: encargado de recibir las horas consolidadas y aplicar reglas de negocio sobre valor hora, horas extras y descuentos, devolviendo como resultado la liquidación del trabajador.
+## Propuesta de Arquitectura
+Se planteó una arquitectura basada en **microservicios**, separando responsabilidades de forma clara:
 
-## Estado actual
-El microservicio de integración de asistencias se encuentra implementado con:
+- **Microservicio de Integración de Asistencias**  
+  Encargado de registrar las asistencias (individual o masiva mediante JSON/Excel).  
+  Valida empleados, evita duplicados y persiste en base de datos.  
+  Consolida totales de horas normales y extras por período y publica un **evento RabbitMQ** con esta información.
 
-- Registro individual de asistencias.
-- Consultas por empleado en un rango de fechas.
-- Cálculo de totales de horas trabajadas y extras.
-- Carga masiva desde JSON.
-- Carga masiva desde archivos Excel, procesando los registros por día y descartando duplicados. (pendiente de implementar).
+- **Microservicio de Integración de Liquidaciones**  
+  Encargado de **escuchar los eventos publicados por Integración de Asistencias**, almacenar los datos recibidos en su propia base de datos y dejarlos listos para generar liquidaciones.  
+  Actualmente implementado con el **esqueleto del consumidor RabbitMQ**, lo que permite demostrar la integración y trazabilidad.
 
-El microservicio de cálculo de liquidaciones queda pendiente de implementación.
+- **Microservicio de Cálculo de Liquidaciones (visión futura)**  
+  Este será un tercer microservicio que aplicará las reglas de negocio de liquidación sobre los datos recibidos.  
+  Permitirá desacoplar aún más la lógica de cálculo, siendo extensible y escalable en fases posteriores.
 
-## Siguientes pasos
-Si me otorgan más tiempo, quiero avanzar en:
+---
 
-- Implementar el microservicio de cálculo de liquidaciones.
-- Agregar RabbitMQ para simular un esquema de producción con dos microservicios comunicándose por eventos.
-- Agregar seguridad con autenticación y JWT.
-- Test unitarios.
-- Preparar un docker-compose que levante: base de datos SQL Server, RabbitMQ y los microservicios.
-- Documentar con diagramas y ejemplos de flujo de eventos con el fin de apoyar la presentación de la solución.
+## Estado Actual
 
-Considero que con esta arquitectura se cumple con un MVP, ya que se aplican principios de arquitectura limpia y SOLID, separando bien las responsabilidades y permitiendo escalar a futuro con el uso eventos con RabbitMQ.
+### Microservicio de Integración de Asistencias
+Implementado con:
+- Registro individual de asistencias.  
+- Consultas por empleado en un rango de fechas.  
+- Cálculo de totales de horas trabajadas y extras.  
+- Carga masiva desde JSON.  
+- Carga masiva desde archivos Excel (pendiente de finalizar).  
+- **Productor RabbitMQ** que publica eventos de asistencias consolidadas.  
+
+### Microservicio de Integración de Liquidaciones
+- Definido el **contrato de evento** `EventoTotalesAsistenciaConsolidados`.  
+- Configuración de **Consumer RabbitMQ** (en desarrollo).  
+- Preparado para almacenar en su BD los totales recibidos y dejarlos listos para ser usados por el motor de cálculo.  
+
+### Microservicio de Cálculo de Liquidaciones
+- **Pendiente de implementación**. Será el motor especializado que procesará las reglas de negocio sobre los datos ya integrados.  
+
+---
+
+## Justificación de Arquitectura
+
+- **Microservicios**: permiten aislar responsabilidades, escalar de forma independiente y desplegar por separado.  
+- **RabbitMQ**: asegura comunicación asincrónica y resiliente. Si un servicio cae, los eventos quedan encolados hasta que el consumidor vuelva a estar disponible.  
+- **Bases de datos separadas**: cada microservicio es dueño de su información, garantizando autonomía y reducción de acoplamiento.  
+- **Eventos consolidados**: se transporta solo lo necesario para cálculo (horas normales, extras, ausencias), reduciendo complejidad y latencia.  
+- **Escalabilidad**: cada microservicio puede aumentar réplicas de forma independiente; RabbitMQ maneja backpressure y distribución de mensajes.  
+- **Observabilidad y trazabilidad**: se incluyen `CorrelationId`, `ArchivoFuente` y `TimestampUtc` en los eventos para auditar de extremo a extremo.  
+
+---
+
+## Siguientes Pasos
+
+Con lo desarrollado, el MVP se encuentra implementado con dos microservicios que se comunican a través de RabbitMQ.  
+Quedan pendientes solo las capas de seguridad y validación automática.
+ 
+1. Completar el **Consumer en Integración de Liquidaciones**, con persistencia idempotente en BD.  
+2. Incorporar métricas y logs estructurados para reforzar trazabilidad de extremo a extremo.  
+3. **Agregar seguridad con autenticación y JWT** (pendiente del MVP).  
+4. **Implementar pruebas unitarias** de los principales flujos (pendiente del MVP).  
+5. Actualizar `docker-compose` que levante SQL Server y los microservicios. 
+6. A mediano plazo: desarrollar el **Microservicio de Cálculo de Liquidaciones**, especializado en reglas de negocio, independiente de IntegraciónLiquidaciones.
+
+---
 
 ## Observaciones
-La carpeta "SampleData" fue creada, en un principio, con el propósito de alojar archivos JSON que simulen los datos de entrada del partner de control de asistencia e hiciera el envío al microservicio de Integración Asistencia. A futuro se espera enviar como evento a través de RabbitMQ, permitiendo que se procese los datos de forma asincónica.
+La carpeta `SampleData` fue creada inicialmente para almacenar archivos JSON de ejemplo que simulan el envío de datos del partner de asistencia al microservicio de Integración de Asistencia.  
+En la versión final, se espera que estos datos sean publicados como eventos en RabbitMQ y consumidos de manera asincrónica.
+
 ---
 
 ## Scripts SQL
@@ -254,4 +293,5 @@ _No requiere body. Devuelve el total de horas normales y extras para el empleado
   }
 ]
 '''
+
 
