@@ -1,0 +1,26 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: mspt-rabbitmq
+    ports:
+      - "5672:5672"    # puerto AMQP (apps)
+      - "15672:15672"  # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      # RABBITMQ_DEFAULT_VHOST: mspt
+    volumes:
+      - ./docker-data/rabbitmq/data:/var/lib/rabbitmq
+      - ./docker-data/rabbitmq/log:/var/log/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - mspt-net
+
+networks:
+  mspt-net:
+    name: mspt-net
