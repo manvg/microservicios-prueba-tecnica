@@ -12,6 +12,7 @@ namespace IntegracionAsistencia.Application.Dtos
         public string RutEmpleado { get; set; }
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
+        public decimal SalarioBase { get; set; }
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
         public decimal TotalHorasNormales { get; set; }

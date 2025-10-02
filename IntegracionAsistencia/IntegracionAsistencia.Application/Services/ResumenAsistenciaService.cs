@@ -97,6 +97,7 @@ namespace IntegracionAsistencia.Application.Services
                 RutEmpleado = r.Empleado?.Rut ?? "",
                 Nombres = r.Empleado?.Nombres ?? "",
                 Apellidos = r.Empleado?.Apellidos ?? "",
+                SalarioBase = r.Empleado?.SalarioBase ?? 0,
                 FechaDesde = r.FechaDesde,
                 FechaHasta = r.FechaHasta,
                 TotalHorasNormales = r.HorasNormales,
