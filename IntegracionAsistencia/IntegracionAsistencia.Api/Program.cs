@@ -1,6 +1,8 @@
 using IntegracionAsistencia.Application.Interfaces;
 using IntegracionAsistencia.Application.Services;
 using IntegracionAsistencia.Domain.Interfaces;
+using IntegracionAsistencia.Infrastructure;
+using IntegracionAsistencia.Infrastructure.Messaging;
 using IntegracionAsistencia.Infrastructure.Persistence.Contexts;
 using IntegracionAsistencia.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,9 @@ ExcelPackage.License.SetNonCommercialPersonal("Manuel - Prueba Técnica");
 // DbContext con SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BDConnection")));
+
+builder.Services.AddMessaging(builder.Configuration);
+builder.Services.Configure<RabbitMqOpciones>(builder.Configuration.GetSection("RabbitMq"));
 
 // Inyección de dependencias (repositorios y servicios)
 builder.Services.AddScoped<IAsistenciaRepository, AsistenciaRepository>();

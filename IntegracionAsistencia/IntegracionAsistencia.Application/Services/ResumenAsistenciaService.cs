@@ -2,7 +2,9 @@
 using IntegracionAsistencia.Application.Interfaces;
 using IntegracionAsistencia.Domain.Entities;
 using IntegracionAsistencia.Domain.Enums;
+using IntegracionAsistencia.Domain.Events;
 using IntegracionAsistencia.Domain.Interfaces;
+using IntegracionAsistencia.Domain.Interfaces.Messaging;
 
 namespace IntegracionAsistencia.Application.Services
 {
@@ -10,11 +12,13 @@ namespace IntegracionAsistencia.Application.Services
     {
         private readonly IAsistenciaRepository _asistenciaRepository;
         private readonly IResumenAsistenciaRepository _resumenRepository;
-
-        public ResumenAsistenciaService(IAsistenciaRepository asistenciaRepository, IResumenAsistenciaRepository resumenAsistenciaRepository)
+        private readonly IEventosIntegracionPublicador _publicadorRabbitMq;
+        public ResumenAsistenciaService(IAsistenciaRepository asistenciaRepository, IResumenAsistenciaRepository resumenAsistenciaRepository,
+            IEventosIntegracionPublicador publicadorRabbitMq)
         {
             _asistenciaRepository = asistenciaRepository;
             _resumenRepository = resumenAsistenciaRepository;
+            _publicadorRabbitMq = publicadorRabbitMq;
         }
 
         public async Task<ResumenAsistenciaResponseDto> GenerarResumenAsistenciaAsync(ResumenAsistenciaRequestDto requestDto)
@@ -36,6 +40,7 @@ namespace IntegracionAsistencia.Application.Services
 
             var gruposPorEmpleado = asistencias.GroupBy(a => a.IdEmpleado);
 
+            Guid idEvento = Guid.NewGuid();
             foreach (var grupo in gruposPorEmpleado)
             {
                 decimal horasNormales = grupo
@@ -68,7 +73,7 @@ namespace IntegracionAsistencia.Application.Services
                     Licencias = licencias,
                     DiasLaborables = diasLaborablesPeriodo,
                     DiasAsistidos = diasAsistidos,
-                    IdCorrelacion = requestDto.IdCorrelacion,
+                    IdCorrelacion = idEvento,
                     FechaGeneracion = DateTime.UtcNow
                 });
             }
@@ -77,10 +82,22 @@ namespace IntegracionAsistencia.Application.Services
 
             await _resumenRepository.GuardarResumenesAsistenciaMasivoAsync(listaResumenGenerado);
 
+            var resumen = await ObtenerResumenParaLiquidacionAsync(
+                new ResumenLiquidacionRequestDto { 
+                    FechaDesde = requestDto.FechaDesde, 
+                    FechaHasta = requestDto.FechaHasta,
+                    IdEmpleado = requestDto.IdEmpleado,
+                    IdEmpresa = requestDto.IdEmpresa,
+                    IdTipoNomina = requestDto.IdTipoNomina
+                });
+
+            PublicarEventoRabbitMQ(resumen, idEvento);
+
             return new ResumenAsistenciaResponseDto
             {
                 TotalProcesados = totalProcesados,
-                Mensaje = $"Se procesaron {totalProcesados} resúmenes de empleados correctamente."
+                Mensaje = $"Se procesaron {totalProcesados} resúmenes de empleados correctamente.",
+                IdEvento = idEvento //Identificador en RabbitMQ
             };
         }
 
@@ -91,7 +108,7 @@ namespace IntegracionAsistencia.Application.Services
             if (!resumenes.Any())
                 throw new InvalidOperationException("No existen resúmenes generados para el período indicado. Debe ejecutar primero la generación de resúmenes.");
 
-            return resumenes.Select(r => new ResumenLiquidacionDto
+            var resultado = resumenes.Select(r => new ResumenLiquidacionDto
             {
                 IdEmpleado = r.IdEmpleado,
                 RutEmpleado = r.Empleado?.Rut ?? "",
@@ -107,8 +124,9 @@ namespace IntegracionAsistencia.Application.Services
                 DiasLaborables = r.DiasLaborables,
                 DiasAsistidos = r.DiasAsistidos
             }).ToList();
-        }
 
+            return resultado;
+        }
         //Calcula días laborables excluyendo fines de semana y feriados
         private int CalcularDiasLaborables(DateTime desde, DateTime hasta)
         {
@@ -147,6 +165,33 @@ namespace IntegracionAsistencia.Application.Services
                 }
             }
             return dias;
+        }
+
+        /// <summary>
+        /// Publica los resúmenes generados en RabbitMQ
+        /// </summary>
+        private async void PublicarEventoRabbitMQ(List<ResumenLiquidacionDto> resumenes, Guid idEvento)
+        {
+            var listaEvento = new List<EventoTotalesAsistenciaConsolidados>();
+
+            foreach (var r in resumenes)
+            {
+                listaEvento.Add(new EventoTotalesAsistenciaConsolidados
+                {
+                    RutEmpleado = r.RutEmpleado,
+                    NombresEmpleado = r.Nombres,
+                    ApellidosEmpleado = r.Apellidos,
+                    Periodo = r.FechaDesde.ToString("yyyy-MM"),
+                    SalarioBase = r.SalarioBase,
+                    HorasNormales = (int)r.TotalHorasNormales, //Decimal
+                    HorasExtras = (int)r.TotalHorasExtras,//Decimal
+                    Inasistencias = r.TotalInasistencias,
+                    DiasLicencia = r.TotalLicenciasMedicas,
+                    IdEvento = idEvento
+                });
+            }
+
+            await _publicadorRabbitMq.PublicarAsync(listaEvento);
         }
     }
 }

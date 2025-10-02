@@ -59,7 +59,7 @@ namespace IntegracionAsistencia.Infrastructure.Repositories
             var query = _context.Asistencia
                 .Where(a => a.Empleado.IdEmpresa == idEmpresa && a.Fecha.Date >= fechDesde && a.Fecha.Date <= fechaHasta);
 
-            if (idEmpleado.HasValue)
+            if (idEmpleado.HasValue && idEmpleado.Value > 0)
                 query = query.Where(a => a.IdEmpleado == idEmpleado.Value);
 
             return await query.ToListAsync();

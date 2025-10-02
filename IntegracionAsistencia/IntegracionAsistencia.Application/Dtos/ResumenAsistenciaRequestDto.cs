@@ -13,6 +13,5 @@ namespace IntegracionAsistencia.Application.Dtos
         public int IdTipoNomina { get; set; }
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
-        public Guid? IdCorrelacion { get; set; }
     }
 }

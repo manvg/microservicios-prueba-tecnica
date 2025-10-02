@@ -157,12 +157,13 @@ namespace IntegracionAsistencia.Infrastructure.Repositories
         {
             var query = _context.ResumenAsistencia
                 .Include(r => r.Empleado)
+                .Include(r => r.TipoNomina)
                 .Where(r => r.IdEmpresa == idEmpresa
                          && r.IdTipoNomina == idTipoNomina
                          && r.FechaDesde == fechaDesde.Date
                          && r.FechaHasta == fechaHasta.Date);
 
-            if (idEmpleado.HasValue)
+            if (idEmpleado.HasValue && idEmpleado.Value > 0)
                 query = query.Where(r => r.IdEmpleado == idEmpleado.Value);
 
             var resumen = await query.OrderBy(r => r.IdEmpleado).ToListAsync();
