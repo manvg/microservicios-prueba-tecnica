@@ -1,4 +1,8 @@
+using IntegracionLiquidaciones.Application.Interfaces;
+using IntegracionLiquidaciones.Application.Services;
+using IntegracionLiquidaciones.Domain.Interfaces;
 using IntegracionLiquidaciones.Infrastructure.Persistence.Contexts;
+using IntegracionLiquidaciones.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,10 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BDConnection")));
 
-// Add services to the container.
+// Inyección de dependencias (repositorios y servicios)
+builder.Services.AddScoped<IResumenAsistenciaRepository, ResumenAsistenciaRepository>();
+builder.Services.AddScoped<IResumenAsistenciaService, ResumenAsistenciaService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\IntegracionLiquidaciones.Application\IntegracionLiquidaciones.Application.csproj" />
     <ProjectReference Include="..\IntegracionLiquidaciones.Infrastructure\IntegracionLiquidaciones.Infrastructure.csproj" />
   </ItemGroup>
